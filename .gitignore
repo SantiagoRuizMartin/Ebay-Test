@@ -1,0 +1,9 @@
+.idea
+*/target/*
+*.jar
+**/*.jar
+Automation/src/main/resources/test.properties
+**/*.avi
+*.java.orig
+*.class
+*.iml
