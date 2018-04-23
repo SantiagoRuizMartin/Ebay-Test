@@ -55,7 +55,7 @@ public class BrowserHelper {
                 this.localDriver = new InternetExplorerDriver(capabilities);
                 break;
             default:
-                throw new DriverError(String.format("Driver '%s' not availble for %s", browser, "creation."));
+                throw new AutomationExceptions();
         }
     }
 
@@ -67,4 +67,5 @@ public class BrowserHelper {
     public WebDriver getLocalDriver() {
         return this.localDriver;
     }
+
 }

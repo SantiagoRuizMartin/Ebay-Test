@@ -1,11 +1,21 @@
 package com.ebay.featuresImpl;
 
+import com.ebay.browserHelper.AutomationExceptions;
 import com.ebay.browserHelper.BrowserHelper;
 import com.ebay.browserHelper.Driver;
+import cucumber.api.Scenario;
+import cucumber.api.java.After;
+import org.apache.log4j.Logger;
 import org.openqa.selenium.*;
+import org.openqa.selenium.Rectangle;
 import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -17,6 +27,8 @@ import java.util.concurrent.TimeUnit;
 public class EbayTestLogic {
 
     static WebDriver localDriver;
+    private static Logger logger = Logger.getLogger(EbayTestLogic.class);
+    private static Scenario myScenario;
 
     /**
      * Open a page using selenium web driver
@@ -30,6 +42,16 @@ public class EbayTestLogic {
         localDriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         localDriver.manage().window().maximize();
         localDriver.get(page);
+    }
+
+
+    /**
+     * used to set the Scenario
+     *
+     * @param myScenarioP the Scenario to be configured
+     */
+    public static void setMyScenario(Scenario myScenarioP) {
+        myScenario = myScenarioP;
     }
 
     /**
@@ -117,7 +139,8 @@ public class EbayTestLogic {
         for (int c = 0; c < quantity; c++) {
             String prName = nameElements.get(c).getText();
             String prPrice = priceElements.get(c).findElement(By.className(" bold")).getText();
-            System.out.println("Product Name: " + prName + "\n" + "Product Price: " + prPrice + "\n");
+//            System.out.println("Product Name: " + prName + "\n" + "Product Price: " + prPrice + "\n");
+            logger.info("Product Name: " + prName + "\n" + "Product Price: " + prPrice + "\n");
         }
     }
 
@@ -128,7 +151,10 @@ public class EbayTestLogic {
             names.add(el.getText());
         }
         Collections.sort(names);
-        names.forEach(System.out::println);
+//        names.forEach(System.out::println);
+        for (String name : names) {
+            logger.info(name);
+        }
     }
 
     static void printAllItems() {
@@ -137,7 +163,8 @@ public class EbayTestLogic {
         for (int c = 0; c < nameElements.size(); c++) {
             String prName = nameElements.get(c).getText();
             String prPrice = priceElements.get(c).findElement(By.className(" bold")).getText();
-            System.out.println("Product Name: " + prName + "\n" + "Product Price: " + prPrice + "\n");
+//            System.out.println("Product Name: " + prName + "\n" + "Product Price: " + prPrice + "\n");
+            logger.info("Product Name: " + prName + "\n" + "Product Price: " + prPrice + "\n");
         }
     }
 
@@ -149,6 +176,49 @@ public class EbayTestLogic {
             return false;
         } catch (StaleElementReferenceException ignored) {
             return false;
+        }
+    }
+
+    /**
+     * Allows to take an screenshot from the screen
+     *
+     * @throws AutomationExceptions.TakeScreenShotException Execute an exception when there is a problem while taking a screenshot.
+     */
+    public static void takeScreenShot() throws AutomationExceptions.TakeScreenShotException {
+
+        Robot r = null;
+        try {
+            r = new Robot();
+        } catch (AWTException e) {
+            logger.error(e.getMessage());
+        }
+        java.awt.Rectangle screenRect = new java.awt.Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
+        BufferedImage screenFullImage = null;
+        if (r != null) {
+            screenFullImage = r.createScreenCapture(screenRect);
+        }
+        ByteArrayOutputStream imageByteArrayOutputStream = new ByteArrayOutputStream();
+        try {
+            if (screenFullImage != null) {
+                ImageIO.write(screenFullImage, "jpg", imageByteArrayOutputStream);
+            }
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+            throw new AutomationExceptions.TakeScreenShotException();
+        }
+        byte[] imageBytes = imageByteArrayOutputStream.toByteArray();
+        myScenario.embed(imageBytes, "image/png");
+    }
+
+    /**
+     * Validates if the scenario has failed and takes a screenshot
+     *
+     * @param scenario the scenario to embed the screenshot
+     * @throws AutomationExceptions.TakeScreenShotException Execute an exception when there is a problem while taking a screenshot.
+     */
+    public static void validateScenarioAndTakeScreenShot(Scenario scenario) throws AutomationExceptions.TakeScreenShotException {
+        if (scenario.isFailed()) {
+            takeScreenShot();
         }
     }
 }

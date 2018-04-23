@@ -1,15 +1,33 @@
 package com.ebay.featuresImpl;
 
+import com.ebay.browserHelper.AutomationExceptions;
+import com.ebay.browserHelper.BrowserHelper;
+import cucumber.api.Scenario;
 import cucumber.api.java.After;
+import cucumber.api.java.Before;
 import cucumber.api.java8.En;
+import org.apache.log4j.Logger;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.testng.Assert;
 
 import java.util.Objects;
+
+import static com.ebay.featuresImpl.EbayTestLogic.validateScenarioAndTakeScreenShot;
 
 /**
  * Created by santi on 4/22/2018.
  */
 public class EbayTestDefinition implements En {
+
+    private static Logger logger = Logger.getLogger(EbayTestDefinition.class);
+
+    @Before()
+    public void embedScreenshotStep(Scenario scenario) {
+        EbayTestLogic.setMyScenario(scenario);
+    }
 
     public EbayTestDefinition() {
         Given("^I enter to ebay shop$", () -> {
@@ -23,7 +41,13 @@ public class EbayTestDefinition implements En {
         Then("^The number of results should be printed$", () -> {
             String count = EbayTestLogic.getTextFromClassElement("rcnt");
             Assert.assertTrue(!Objects.equals(count, ""));
-            System.out.println("For this filter the result is: " + count);
+            try {
+                EbayTestLogic.takeScreenShot();
+            } catch (AutomationExceptions.TakeScreenShotException e) {
+                e.printStackTrace();
+            }
+//            System.out.println("For this filter the result is: " + count);
+            logger.info("For this filter the result is: " + count);
         });
         And("^I select the product (.*)$", EbayTestLogic::selectForShoesItem);
 
@@ -31,13 +55,25 @@ public class EbayTestDefinition implements En {
 
         When("^I click to sort the result by price ascending$", () -> {
             EbayTestLogic.getItemFromDropDownMenu(3);
+            try {
+                EbayTestLogic.takeScreenShot();
+            } catch (AutomationExceptions.TakeScreenShotException e) {
+                e.printStackTrace();
+            }
         });
 
         Then("^The results should be sorted in ascending$", () -> {
             //This step is only to keep the scenario structure
         });
 
-        Then("^I assert the order taking the first (\\d+) results$", EbayTestLogic::assertOrderByAQuantityOfProducts);
+        Then("^I assert the order taking the first (\\d+) results$", (Integer quantity) -> {
+            EbayTestLogic.assertOrderByAQuantityOfProducts(quantity);
+            try {
+                EbayTestLogic.takeScreenShot();
+            } catch (AutomationExceptions.TakeScreenShotException e) {
+                e.printStackTrace();
+            }
+        });
 
         Then("^The first (\\d+) products with their prices should be printed in console$", EbayTestLogic::printElementsNameAndPrice);
 
@@ -50,9 +86,12 @@ public class EbayTestDefinition implements En {
         Then("^The products should be printed$", EbayTestLogic::printAllItems);
     }
 
+
     @After
-    public void tearDown() {
-        EbayTestLogic.localDriver.close();
+    public void embedScreenshot(Scenario scenario) throws AutomationExceptions.TakeScreenShotException {
+        validateScenarioAndTakeScreenShot(scenario);
         EbayTestLogic.localDriver.quit();
     }
+
+
 }
