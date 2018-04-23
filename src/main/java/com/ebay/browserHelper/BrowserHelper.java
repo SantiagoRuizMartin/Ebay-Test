@@ -2,6 +2,7 @@ package com.ebay.browserHelper;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.ie.InternetExplorerDriver;
@@ -38,9 +39,12 @@ public class BrowserHelper {
                 break;
 
             case CHROME:
+
                 System.setProperty("webdriver.chrome.driver",
                         "src/main/resources/drivers/chromedriver.exe");
-                this.localDriver = new ChromeDriver();
+                ChromeOptions options2 = new ChromeOptions();
+                options2.addArguments("disable-infobars");
+                this.localDriver = new ChromeDriver(options2);
                 break;
             case SAFARI:
                 this.localDriver = new SafariDriver();
