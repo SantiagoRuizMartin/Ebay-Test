@@ -2,21 +2,28 @@ package com.ebay.ebayTest;
 
 import com.ebay.browserHelper.BrowserHelper;
 import com.ebay.browserHelper.Driver;
-import cucumber.api.java.After;
 import org.openqa.selenium.*;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Created by santi on 4/22/2018.
  */
 public class EbayTestLogic {
-    public static WebDriver localDriver;
 
+    static WebDriver localDriver;
+
+    /**
+     * Open a page using selenium web driver
+     *
+     * @param page A valid URL to navigate
+     * @throws Exception
+     */
     static void openWebPage(String page) throws Exception {
         BrowserHelper browserHelper = new BrowserHelper(Driver.CHROME);
         localDriver = browserHelper.getLocalDriver();
@@ -25,6 +32,11 @@ public class EbayTestLogic {
         localDriver.get(page);
     }
 
+    /**
+     * Search a product from the search bar
+     *
+     * @param product String with the product you want to search
+     */
     static void selectForShoesItem(String product) {
         WebElement shoes = localDriver.findElement(By.id("gh-ac"));
         WebElement searchButton = localDriver.findElement(By.id("gh-btn"));
@@ -32,7 +44,12 @@ public class EbayTestLogic {
         searchButton.click();
     }
 
-
+    /**
+     * Make a filter using some key words
+     *
+     * @param brand String brand to filter
+     * @param size  int size to filter
+     */
     static void filterProductByBrandAndSize(String brand, Integer size) {
         WebElement brandFilter = localDriver.findElement(By.xpath("//span[text()='" + brand + "']"));
         brandFilter.click();
@@ -40,25 +57,36 @@ public class EbayTestLogic {
         sizeFilter.click();
     }
 
+
+    /**
+     * Get a String text from an element Id
+     *
+     * @param elementId a valid element Id to get it's text value
+     * @return
+     */
     static String getTextFromClassElement(String elementId) {
         WebElement textElement = localDriver.findElement(By.className(elementId));
         return textElement.getText();
     }
 
-    static void getItemFromDropDownMenu() {
+    /**
+     * Allow to get an item from menu
+     *
+     * @param index in index where the item is set
+     */
+    static void getItemFromDropDownMenu(int index) {
         WebElement webElement = localDriver.findElement(By.className("sort-menu-container"));
         webElement.click();
-        webElement.findElement(By.xpath("//*[@id=\"SortMenu\"]/li[3]/a")).click();
+        webElement.findElement(By.xpath("//*[@id=\"SortMenu\"]/li[" + index + "]/a")).click();
     }
 
-    static void getItemFromDropDownMenuDescendant() {
-        WebElement webElement = localDriver.findElement(By.className("sort-menu-container"));
-        webElement.click();
-        webElement.findElement(By.xpath("//*[@id=\"SortMenu\"]/li[4]/a")).click();
-    }
-
-    private static void orderProducts(WebElement webElement) {
-        webElement.click();
+    /**
+     * Allow to order products
+     *
+     * @param productToOrder is the Web element that contains all the product information
+     */
+    private static void orderProducts(WebElement productToOrder) {
+        productToOrder.click();
         if (checkElementPresence(localDriver, By.id("msku-sel-1"))) {
             Select size = new Select(localDriver.findElement(By.id("msku-sel-1")));
             size.selectByVisibleText("10");
@@ -67,7 +95,13 @@ public class EbayTestLogic {
         localDriver.findElement(By.id("contShoppingBtn")).click();
     }
 
-    static void assertOrderByFirstProducts(Integer quantity) {
+
+    /**
+     * Add products to cart
+     *
+     * @param quantity number of products to add
+     */
+    static void assertOrderByAQuantityOfProducts(Integer quantity) {
         for (int c = 0; c < quantity; c++) {
             List<WebElement> productsElement = localDriver.findElements(By.className("imgWr"));
             orderProducts(productsElement.get(c));
