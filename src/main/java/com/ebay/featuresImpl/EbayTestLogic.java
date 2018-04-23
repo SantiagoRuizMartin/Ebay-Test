@@ -1,4 +1,4 @@
-package com.ebay.ebayTest;
+package com.ebay.featuresImpl;
 
 import com.ebay.browserHelper.BrowserHelper;
 import com.ebay.browserHelper.Driver;

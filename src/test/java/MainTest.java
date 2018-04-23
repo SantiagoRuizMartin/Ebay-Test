@@ -1,4 +1,4 @@
-package com.ebay;
+import cucumber.api.CucumberOptions;
 
 
 import cucumber.api.CucumberOptions;
@@ -11,5 +11,5 @@ import cucumber.api.testng.AbstractTestNGCucumberTests;
         glue = "com.ebay"
 //        tags = {"@myTests"}
 )
-public class Main extends AbstractTestNGCucumberTests{
+class MainTest extends AbstractTestNGCucumberTests {
 }

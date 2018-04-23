@@ -1,14 +1,10 @@
-package com.ebay.ebayTest;
+package com.ebay.featuresImpl;
 
 import cucumber.api.java.After;
 import cucumber.api.java8.En;
 import org.testng.Assert;
 
 import java.util.Objects;
-
-import static com.ebay.ebayTest.EbayTestLogic.getItemFromDropDownMenu;
-import static com.ebay.ebayTest.EbayTestLogic.getTextFromClassElement;
-import static com.ebay.ebayTest.EbayTestLogic.openWebPage;
 
 /**
  * Created by santi on 4/22/2018.
@@ -18,14 +14,14 @@ public class EbayTestDefinition implements En {
     public EbayTestDefinition() {
         Given("^I enter to ebay shop$", () -> {
             try {
-                openWebPage("https://www.ebay.com/");
+                EbayTestLogic.openWebPage("https://www.ebay.com/");
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
 
         Then("^The number of results should be printed$", () -> {
-            String count = getTextFromClassElement("rcnt");
+            String count = EbayTestLogic.getTextFromClassElement("rcnt");
             Assert.assertTrue(!Objects.equals(count, ""));
             System.out.println("For this filter the result is: " + count);
         });
@@ -34,7 +30,7 @@ public class EbayTestDefinition implements En {
         And("^I select the (.+) brand and size (\\d+)$", EbayTestLogic::filterProductByBrandAndSize);
 
         When("^I click to sort the result by price ascending$", () -> {
-            getItemFromDropDownMenu(3);
+            EbayTestLogic.getItemFromDropDownMenu(3);
         });
 
         Then("^The results should be sorted in ascending$", () -> {
@@ -48,7 +44,7 @@ public class EbayTestDefinition implements En {
         When("^I Order the products result by name ascending$", EbayTestLogic::printItemsSorted);
 
         When("^I Order the products result by price descendant$", () -> {
-            getItemFromDropDownMenu(4);
+            EbayTestLogic.getItemFromDropDownMenu(4);
         });
 
         Then("^The products should be printed$", EbayTestLogic::printAllItems);
