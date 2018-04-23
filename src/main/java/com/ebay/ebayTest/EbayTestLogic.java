@@ -4,12 +4,11 @@ import com.ebay.browserHelper.BrowserHelper;
 import com.ebay.browserHelper.Driver;
 import cucumber.api.java.After;
 import org.openqa.selenium.*;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -52,6 +51,12 @@ public class EbayTestLogic {
         webElement.findElement(By.xpath("//*[@id=\"SortMenu\"]/li[3]/a")).click();
     }
 
+    static void getItemFromDropDownMenuDescendant() {
+        WebElement webElement = localDriver.findElement(By.className("sort-menu-container"));
+        webElement.click();
+        webElement.findElement(By.xpath("//*[@id=\"SortMenu\"]/li[4]/a")).click();
+    }
+
     private static void orderProducts(WebElement webElement) {
         webElement.click();
         if (checkElementPresence(localDriver, By.id("msku-sel-1"))) {
@@ -78,7 +83,7 @@ public class EbayTestLogic {
         for (int c = 0; c < quantity; c++) {
             String prName = nameElements.get(c).getText();
             String prPrice = priceElements.get(c).findElement(By.className(" bold")).getText();
-            System.out.println("Product Name: " + prName + "\n" + "Product Price: " + prPrice);
+            System.out.println("Product Name: " + prName + "\n" + "Product Price: " + prPrice + "\n");
         }
     }
 
@@ -90,8 +95,18 @@ public class EbayTestLogic {
         }
         Collections.sort(names);
         names.forEach(System.out::println);
-
     }
+
+    static void printAllItems() {
+        List<WebElement> nameElements = localDriver.findElements(By.className("gvtitle"));
+        List<WebElement> priceElements = localDriver.findElements(By.className("gvprices"));
+        for (int c = 0; c < nameElements.size(); c++) {
+            String prName = nameElements.get(c).getText();
+            String prPrice = priceElements.get(c).findElement(By.className(" bold")).getText();
+            System.out.println("Product Name: " + prName + "\n" + "Product Price: " + prPrice + "\n");
+        }
+    }
+
 
     private static boolean checkElementPresence(final WebDriver driver, final By by) {
         try {

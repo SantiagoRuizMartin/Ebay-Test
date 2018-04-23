@@ -28,7 +28,6 @@ Feature: Basic ebay tests
     When I Order the products result by name ascending
 #    Then The products should be printed
 
-#
-#  Scenario: Navigate to ebay site and order and print the products by price descendant mode
-#    When I Order the products result by name ascending
-#    Then The products should be printed
+  Scenario: Navigate to ebay site and order and print the products by price descendant mode
+    When I Order the products result by price descendant
+    Then The products should be printed

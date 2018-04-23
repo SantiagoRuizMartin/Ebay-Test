@@ -9,7 +9,6 @@ import cucumber.api.CucumberOptions;
         features = {"src/main/resources"},
         monochrome = true,
         glue = "net.sruiz"
-//        tags = {"@tag"}
 )
 public class MainTest {
 }

@@ -38,6 +38,8 @@ public class EbayTestDefinition implements En {
         Then("^I assert the order taking the first (\\d+) results$", EbayTestLogic::assertOrderByFirstProducts);
         Then("^The first (\\d+) products with their prices should be printed in console$", EbayTestLogic::printElementsNameAndPrice);
         When("^I Order the products result by name ascending$", EbayTestLogic::printItemsSorted);
+        When("^I Order the products result by price descendant$", EbayTestLogic::getItemFromDropDownMenuDescendant);
+        Then("^The products should be printed$", EbayTestLogic::printAllItems);
     }
 
     @After
