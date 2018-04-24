@@ -1,20 +1,18 @@
 package com.ebay.featuresImpl;
 
 import com.ebay.browserHelper.AutomationExceptions;
-import com.ebay.browserHelper.BrowserHelper;
 import cucumber.api.Scenario;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import cucumber.api.java8.En;
 import org.apache.log4j.Logger;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebDriverException;
 import org.testng.Assert;
 
+import java.util.List;
 import java.util.Objects;
 
+import static com.ebay.featuresImpl.EbayTestLogic.getItemsSorted;
+import static com.ebay.featuresImpl.EbayTestLogic.printFromList;
 import static com.ebay.featuresImpl.EbayTestLogic.validateScenarioAndTakeScreenShot;
 
 /**
@@ -23,6 +21,7 @@ import static com.ebay.featuresImpl.EbayTestLogic.validateScenarioAndTakeScreenS
 public class EbayTestDefinition implements En {
 
     private static Logger logger = Logger.getLogger(EbayTestDefinition.class);
+    List<String> sortedItems;
 
     @Before()
     public void embedScreenshotStep(Scenario scenario) {
@@ -67,7 +66,7 @@ public class EbayTestDefinition implements En {
         });
 
         Then("^I assert the order taking the first (\\d+) results$", (Integer quantity) -> {
-            EbayTestLogic.assertOrderByAQuantityOfProducts(quantity);
+            EbayTestLogic.theOrderIsCorrect(quantity);
             try {
                 EbayTestLogic.takeScreenShot();
             } catch (AutomationExceptions.TakeScreenShotException e) {
@@ -77,13 +76,18 @@ public class EbayTestDefinition implements En {
 
         Then("^The first (\\d+) products with their prices should be printed in console$", EbayTestLogic::printElementsNameAndPrice);
 
-        When("^I Order the products result by name ascending$", EbayTestLogic::printItemsSorted);
+        When("^I Order the products result by name ascending$", () -> {
+            sortedItems = getItemsSorted();
+        });
 
         When("^I Order the products result by price descendant$", () -> {
             EbayTestLogic.getItemFromDropDownMenu(4);
         });
 
         Then("^The products should be printed$", EbayTestLogic::printAllItems);
+        Then("^The products sorted should be printed$", () -> {
+            printFromList(sortedItems);
+        });
     }
 
 

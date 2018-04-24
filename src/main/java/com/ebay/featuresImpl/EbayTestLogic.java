@@ -4,10 +4,9 @@ import com.ebay.browserHelper.AutomationExceptions;
 import com.ebay.browserHelper.BrowserHelper;
 import com.ebay.browserHelper.Driver;
 import cucumber.api.Scenario;
-import cucumber.api.java.After;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.*;
-import org.openqa.selenium.Rectangle;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
 
@@ -16,8 +15,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -133,29 +131,38 @@ public class EbayTestLogic {
     }
 
 
-    static void printElementsNameAndPrice(Integer quantity) {
-        List<WebElement> nameElements = localDriver.findElements(By.className("gvtitle"));
+    static Double getFinalItemPrice(String shipPrice, String productPrice) {
+        Double shipPrice2 = Double.parseDouble(shipPrice) * 2765;
+        Double productPrice2 = Double.parseDouble(productPrice);
+        return shipPrice2 + productPrice2;
+    }
+
+    static void theOrderIsCorrect(Integer quantity) {
         List<WebElement> priceElements = localDriver.findElements(By.className("gvprices"));
+        List<WebElement> shipElements = localDriver.findElements(By.className("gvshipping"));
+        Double finalPrice = 0.0;
         for (int c = 0; c < quantity; c++) {
-            String prName = nameElements.get(c).getText();
-            String prPrice = priceElements.get(c).findElement(By.className(" bold")).getText();
-//            System.out.println("Product Name: " + prName + "\n" + "Product Price: " + prPrice + "\n");
-            logger.info("Product Name: " + prName + "\n" + "Product Price: " + prPrice + "\n");
+            String prPrice = priceElements.get(c).findElement(By.className(" bold")).getText().substring(5).replaceAll("\\s+", "");
+            String shipPrice = shipElements.get(c).findElement(By.className("amt")).getText().substring(4, 9);
+            Assert.assertTrue(finalPrice < getFinalItemPrice(shipPrice, prPrice), "The order of prices are not the correct");
+            finalPrice = getFinalItemPrice(shipPrice, prPrice);
         }
     }
 
-    static void printItemsSorted() {
+
+    static void printElementsNameAndPrice(Integer quantity) {
         List<WebElement> nameElements = localDriver.findElements(By.className("gvtitle"));
-        List<String> names = new ArrayList<>();
-        for (WebElement el : nameElements) {
-            names.add(el.getText());
-        }
-        Collections.sort(names);
-//        names.forEach(System.out::println);
-        for (String name : names) {
-            logger.info(name);
+        List<WebElement> priceElements = localDriver.findElements(By.className("gvprices"));
+        List<WebElement> shipElements = localDriver.findElements(By.className("gvshipping"));
+        for (int c = 0; c < quantity; c++) {
+            String prName = nameElements.get(c).getText();
+            String prPrice = priceElements.get(c).findElement(By.className(" bold")).getText().substring(5).replaceAll("\\s+", "");
+            String shipPrice = shipElements.get(c).findElement(By.className("amt")).getText().substring(4, 9);
+            Double finalPrice = getFinalItemPrice(shipPrice, prPrice);
+            logger.info("Product Name: " + prName + "\n" + "Product Price: " + finalPrice + "\n");
         }
     }
+
 
     static void printAllItems() {
         List<WebElement> nameElements = localDriver.findElements(By.className("gvtitle"));
@@ -163,8 +170,25 @@ public class EbayTestLogic {
         for (int c = 0; c < nameElements.size(); c++) {
             String prName = nameElements.get(c).getText();
             String prPrice = priceElements.get(c).findElement(By.className(" bold")).getText();
-//            System.out.println("Product Name: " + prName + "\n" + "Product Price: " + prPrice + "\n");
             logger.info("Product Name: " + prName + "\n" + "Product Price: " + prPrice + "\n");
+        }
+    }
+
+
+    static List<String> getItemsSorted() {
+        List<WebElement> nameElements = localDriver.findElements(By.className("gvtitle"));
+        List<String> names = new ArrayList<>();
+        Map m1 = new HashMap();
+        for (WebElement el : nameElements) {
+            names.add(el.getText());
+        }
+        Collections.sort(names);
+        return names;
+    }
+
+    static void printFromList(List<String> list) {
+        for (String productName : list) {
+            logger.info(productName);
         }
     }
 

@@ -31,7 +31,7 @@ Feature: Basic ebay tests
   @F1S5
   Scenario: Navigate to ebay site and order and print the products by name (ascendant)
     When I Order the products result by name ascending
-#    Then The products should be printed
+    Then The products sorted should be printed
 
 
   @F1S6
